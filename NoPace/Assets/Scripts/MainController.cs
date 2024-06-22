@@ -13,14 +13,20 @@ public class MainController : MonoBehaviour
     public float defaultTime;
     public bool isPaused;
     public List<GameObject> activityGameObjectList;
+    public Color backgroundColor;
 
     [SerializeField] private float activityRunningTime;
     [SerializeField] private TextMeshProUGUI activityRunningTimeText;
     [SerializeField] private Transform activityRow;
     [SerializeField] private Transform activityTemplate;
     [SerializeField] private Button addActivityButton;
-    [SerializeField] private Button startActivityButton;
     [SerializeField] private Button resetButton;
+    [SerializeField] private Button startActivityButton;
+    [SerializeField] private Image startActivityImage;
+    [SerializeField] private Sprite pauseSprite;
+    [SerializeField] private Sprite resumeSprite;
+    
+    private int maxActivityAmount = 20;
 
 
     private void Awake() 
@@ -51,13 +57,27 @@ public class MainController : MonoBehaviour
 
     private void AddNewActivity()
     {
-        Transform activityTemplateInstantiated = Instantiate(activityTemplate, activityRow);
-        activityGameObjectList.Add(activityTemplateInstantiated.gameObject);
+        if(activityGameObjectList.Count <= maxActivityAmount)
+        {
+            Transform activityTemplateInstantiated = Instantiate(activityTemplate, activityRow);
+            activityGameObjectList.Add(activityTemplateInstantiated.gameObject);
+        }
     }
 
     private void TogglePauseTimer()
     {
         isPaused = !isPaused;
+
+        if(isPaused)
+        {
+            startActivityImage.sprite = resumeSprite;
+        }
+        else
+        {
+            startActivityImage.sprite = pauseSprite;
+        }
+
+        activityGameObjectList[0].GetComponent<ActivityTemplate>().backgroundImage.color = backgroundColor;
     }
 
     public void StartNearestActivity()
@@ -80,13 +100,10 @@ public class MainController : MonoBehaviour
     {
         isPaused = true;
         activityRunningTime = 0f;
+        
+        startActivityImage.sprite = resumeSprite;   
+        
         UpdateVisual();
-
-        /* foreach (GameObject activityGameObject in activityGameObjectList)
-        {
-            activityGameObjectList.Remove(activityGameObject);
-            Destroy(activityGameObject);
-        } */
 
         for (int i = 0; i < activityGameObjectList.Count; i++)
         {

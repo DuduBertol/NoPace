@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class ActivityTemplate : MonoBehaviour
 {
     public float remainingTimer;
+    public Image backgroundImage;
+
     [SerializeField] private bool canStart;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Button plusButton;
@@ -25,8 +27,13 @@ public class ActivityTemplate : MonoBehaviour
         });    
         closeButton.onClick.AddListener(() => {
             DestroySelf();
-            
+            MainController.Instance.StartNearestActivity();
         });    
+    }
+
+    private void Start() 
+    {
+        LeanTween.scale(gameObject.GetComponent<RectTransform>(), Vector3.one, 0.25f).setEaseOutExpo();    
     }
 
     private void Update()
@@ -48,6 +55,10 @@ public class ActivityTemplate : MonoBehaviour
             }
         }
         else if(remainingTimer < 0)
+        {
+            remainingTimer = 0f;
+        }
+        else if(remainingTimer == 0)
         {
             DestroySelf();
             MainController.Instance.StartNearestActivity();
@@ -71,7 +82,10 @@ public class ActivityTemplate : MonoBehaviour
 
     private void DestroySelf()
     {
-        Destroy(gameObject);
+        LeanTween.moveX(this.gameObject.GetComponent<RectTransform>(), -1500, 1f).setEaseInOutBack().setDestroyOnComplete(true);
         MainController.Instance.activityGameObjectList.Remove(gameObject);
+
+        if(MainController.Instance.activityGameObjectList.Count != 0)
+            MainController.Instance.activityGameObjectList[0].GetComponent<ActivityTemplate>().backgroundImage.color = MainController.Instance.backgroundColor;
     }
 }
