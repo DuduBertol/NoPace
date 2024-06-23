@@ -14,15 +14,21 @@ public class ActivityTemplate : MonoBehaviour
     [SerializeField] private Button plusButton;
     [SerializeField] private Button minusButton;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Button chooseColorButton;
+
+    
+
 
     private void Awake() 
     {
         plusButton.onClick.AddListener(() => {
-            remainingTimer += MainController.Instance.defaultTime;
+            if(remainingTimer >= 0)
+                remainingTimer += MainController.Instance.defaultTime;
             UpdateVisual();
         });    
         minusButton.onClick.AddListener(() => {
-            remainingTimer -= MainController.Instance.defaultTime;
+            if(remainingTimer > 0)
+                remainingTimer -= MainController.Instance.defaultTime;
             UpdateVisual();
         });    
         closeButton.onClick.AddListener(() => {
@@ -46,10 +52,12 @@ public class ActivityTemplate : MonoBehaviour
 
     private void DecreasingTime()
     {
+        float timeToVibrate = 3f;
+
         if(remainingTimer > 0)
         {
             remainingTimer -= Time.deltaTime;
-            if(remainingTimer < 0.5f)
+            if(remainingTimer < timeToVibrate)
             {
                 Handheld.Vibrate();
             }

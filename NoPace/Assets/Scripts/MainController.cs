@@ -19,9 +19,12 @@ public class MainController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI activityRunningTimeText;
     [SerializeField] private Transform activityRow;
     [SerializeField] private Transform activityTemplate;
+    [SerializeField] private Transform lockerUI;
     [SerializeField] private Button addActivityButton;
     [SerializeField] private Button resetButton;
     [SerializeField] private Button startActivityButton;
+    [SerializeField] private Button lockButton;
+    [SerializeField] private Button unlockButton;
     [SerializeField] private Image startActivityImage;
     [SerializeField] private Sprite pauseSprite;
     [SerializeField] private Sprite resumeSprite;
@@ -42,6 +45,12 @@ public class MainController : MonoBehaviour
         });   
         resetButton.onClick.AddListener(() => {
             ResetActivity();
+        });   
+        lockButton.onClick.AddListener(() => {
+            LeanTween.scale(lockerUI.GetComponent<RectTransform>(), Vector3.one, 0.25f).setEaseOutExpo();
+        });   
+        unlockButton.onClick.AddListener(() => {
+            LeanTween.scale(lockerUI.GetComponent<RectTransform>(), Vector3.zero, 0.25f).setEaseOutExpo();
         });   
     }
 
@@ -77,7 +86,10 @@ public class MainController : MonoBehaviour
             startActivityImage.sprite = pauseSprite;
         }
 
-        activityGameObjectList[0].GetComponent<ActivityTemplate>().backgroundImage.color = backgroundColor;
+        if(activityGameObjectList.Count != 0)
+        {
+            activityGameObjectList[0].GetComponent<ActivityTemplate>().backgroundImage.color = backgroundColor;
+        }
     }
 
     public void StartNearestActivity()
