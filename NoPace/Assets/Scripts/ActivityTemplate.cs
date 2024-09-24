@@ -9,14 +9,15 @@ public class ActivityTemplate : MonoBehaviour
     public float remainingTimer;
     public Image backgroundImage;
 
+    private bool isDead;
+
     [SerializeField] private bool canStart;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Button plusButton;
     [SerializeField] private Button minusButton;
     [SerializeField] private Button closeButton;
     [SerializeField] private Button chooseColorButton;
-
-    
+    [SerializeField] private AudioSource audioSource;
 
 
     private void Awake() 
@@ -68,8 +69,13 @@ public class ActivityTemplate : MonoBehaviour
         }
         else if(remainingTimer == 0)
         {
-            DestroySelf();
-            MainController.Instance.StartNearestActivity();
+            if (!isDead)
+            {
+                isDead = true;
+                audioSource.PlayOneShot(audioSource.clip);
+                DestroySelf();
+                MainController.Instance.StartNearestActivity();
+            }
         }
 
         UpdateVisual();
@@ -90,7 +96,7 @@ public class ActivityTemplate : MonoBehaviour
 
     private void DestroySelf()
     {
-        LeanTween.moveX(this.gameObject.GetComponent<RectTransform>(), -1500, 1f).setEaseInOutBack().setDestroyOnComplete(true);
+        LeanTween.moveX(this.gameObject.GetComponent<RectTransform>(), -1500, 4f).setEaseInOutBack().setDestroyOnComplete(true);
         MainController.Instance.activityGameObjectList.Remove(gameObject);
 
         if(MainController.Instance.activityGameObjectList.Count != 0)
